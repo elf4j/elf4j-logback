@@ -45,7 +45,7 @@ class LogbackLogger implements Logger {
     private static final Level DEFAULT_LEVEL = INFO;
     private static final String EMPTY_MESSAGE = "";
     private static final String FQCN = LogbackLogger.class.getName();
-    private static final EnumMap<Level, Integer> LEVEL_INT_MAP = setLevelIntMap();
+    private static final EnumMap<Level, Integer> LEVEL_MAP = setLeveMap();
     private static final EnumMap<Level, Map<String, LogbackLogger>> LOGGER_CACHE = initLoggerCache();
     @NonNull private final String name;
     @NonNull private final Level level;
@@ -83,7 +83,7 @@ class LogbackLogger implements Logger {
         return loggerCache;
     }
 
-    private static EnumMap<Level, Integer> setLevelIntMap() {
+    private static EnumMap<Level, Integer> setLeveMap() {
         EnumMap<Level, Integer> levelMap = new EnumMap<>(Level.class);
         levelMap.put(TRACE, LocationAwareLogger.TRACE_INT);
         levelMap.put(DEBUG, LocationAwareLogger.DEBUG_INT);
@@ -141,7 +141,7 @@ class LogbackLogger implements Logger {
         if (isLevelDisabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_INT_MAP.get(this.level), Objects.toString(message), null, null);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message), null, null);
     }
 
     @Override
@@ -149,12 +149,12 @@ class LogbackLogger implements Logger {
         if (isLevelDisabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_INT_MAP.get(this.level), Objects.toString(message.get()), null, null);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message.get()), null, null);
     }
 
     @Override
     public void log(String message, Object... args) {
-        nativeLogger.log(null, FQCN, LEVEL_INT_MAP.get(this.level), message, args, null);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, null);
     }
 
     @Override
@@ -164,7 +164,7 @@ class LogbackLogger implements Logger {
         }
         nativeLogger.log(null,
                 FQCN,
-                LEVEL_INT_MAP.get(this.level),
+                LEVEL_MAP.get(this.level),
                 message,
                 Arrays.stream(args).map(Supplier::get).toArray(Object[]::new),
                 null);
@@ -172,12 +172,12 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(Throwable t) {
-        nativeLogger.log(null, FQCN, LEVEL_INT_MAP.get(this.level), EMPTY_MESSAGE, null, t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), EMPTY_MESSAGE, null, t);
     }
 
     @Override
     public void log(Throwable t, String message) {
-        nativeLogger.log(null, FQCN, LEVEL_INT_MAP.get(this.level), message, null, t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, null, t);
     }
 
     @Override
@@ -185,12 +185,12 @@ class LogbackLogger implements Logger {
         if (isLevelDisabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_INT_MAP.get(this.level), message.get(), null, t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message.get(), null, t);
     }
 
     @Override
     public void log(Throwable t, String message, Object... args) {
-        nativeLogger.log(null, FQCN, LEVEL_INT_MAP.get(this.level), message, args, t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, t);
     }
 
     @Override
@@ -200,7 +200,7 @@ class LogbackLogger implements Logger {
         }
         nativeLogger.log(null,
                 FQCN,
-                LEVEL_INT_MAP.get(this.level),
+                LEVEL_MAP.get(this.level),
                 message,
                 Arrays.stream(args).map(Supplier::get).toArray(Object[]::new),
                 t);
