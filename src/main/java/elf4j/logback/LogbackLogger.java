@@ -176,16 +176,19 @@ class LogbackLogger implements Logger {
     }
 
     @Override
-    public void log(Throwable t, String message) {
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, null, t);
-    }
-
-    @Override
-    public void log(Throwable t, Supplier<String> message) {
+    public void log(Throwable t, Object message) {
         if (isLevelDisabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message.get(), null, t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message), null, t);
+    }
+
+    @Override
+    public void log(Throwable t, Supplier<?> message) {
+        if (isLevelDisabled()) {
+            return;
+        }
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message.get()), null, t);
     }
 
     @Override
