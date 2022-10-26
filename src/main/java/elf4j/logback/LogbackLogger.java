@@ -104,14 +104,6 @@ class LogbackLogger implements Logger {
     }
 
     @Override
-    public Logger atLevel(Level level) {
-        if (this.level == level) {
-            return this;
-        }
-        return level == OFF ? NoopLogger.INSTANCE : getLogger(this.name, level);
-    }
-
-    @Override
     public Logger atTrace() {
         return atLevel(TRACE);
     }
@@ -207,6 +199,13 @@ class LogbackLogger implements Logger {
                 message,
                 Arrays.stream(args).map(Supplier::get).toArray(Object[]::new),
                 t);
+    }
+
+    private Logger atLevel(Level level) {
+        if (this.level == level) {
+            return this;
+        }
+        return level == OFF ? NoopLogger.INSTANCE : getLogger(this.name, level);
     }
 
     private boolean isLevelDisabled() {

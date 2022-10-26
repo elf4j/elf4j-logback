@@ -28,8 +28,6 @@ import elf4j.Level;
 import elf4j.Logger;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -46,12 +44,6 @@ class LogbackLoggerTest {
         void optToSupplyDefaultLevelAsInfo() {
             assertEquals(Level.INFO, LOGGER.getLevel());
             LOGGER.log("opt to provide default level");
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = { "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF" })
-        void atLevel(String level) {
-            assertEquals(Level.valueOf(level), LOGGER.atLevel(Level.valueOf(level)).getLevel());
         }
 
         @Test
@@ -74,7 +66,7 @@ class LogbackLoggerTest {
 
         @Test
         void supplier() {
-            LOGGER.atLevel(Level.TRACE).log(() -> "supplier message");
+            LOGGER.atTrace().log(() -> "supplier message");
         }
 
         @Test
@@ -84,7 +76,7 @@ class LogbackLoggerTest {
 
         @Test
         void messageAndSuppliers() {
-            LOGGER.atLevel(Level.WARN)
+            LOGGER.atWarn()
                     .log("message supplier arg1 {}, arg2 {}, arg3 {}",
                             () -> "a11111",
                             () -> "a22222",
@@ -93,22 +85,22 @@ class LogbackLoggerTest {
 
         @Test
         void throwable() {
-            LOGGER.atLevel(Level.ERROR).log(new Exception("ex message"));
+            LOGGER.atError().log(new Exception("ex message"));
         }
 
         @Test
         void throwableAndMessage() {
-            LOGGER.atLevel(Level.ERROR).log(new Exception("ex message"), "log message");
+            LOGGER.atError().log(new Exception("ex message"), "log message");
         }
 
         @Test
         void throwableAndSupplier() {
-            LOGGER.atLevel(Level.ERROR).log(new Exception("ex message"), () -> "supplier log message");
+            LOGGER.atError().log(new Exception("ex message"), () -> "supplier log message");
         }
 
         @Test
         void throwableAndMessageAndArgs() {
-            LOGGER.atLevel(Level.ERROR).log(new Exception("ex message"), "log message with arg {}", "a11111");
+            LOGGER.atError().log(new Exception("ex message"), "log message with arg {}", "a11111");
         }
 
         @Test
@@ -148,7 +140,6 @@ class LogbackLoggerTest {
         @Test
         void messageAndArgs() {
             logger.atInfo().log("info message");
-            logger.atLevel(Level.INFO).log("{} is a shorthand of {}", "atInfo()", "atLevel(Level.INFO)");
             logger.atWarn()
                     .log("warn message with supplier arg1 {}, arg2 {}, arg3 {}",
                             () -> "a11111",
