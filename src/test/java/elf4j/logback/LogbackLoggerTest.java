@@ -24,7 +24,6 @@
 
 package elf4j.logback;
 
-import elf4j.Level;
 import elf4j.Logger;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class LogbackLoggerTest {
     public static final Logger LOGGER = Logger.instance(LogbackLoggerTest.class);
@@ -42,17 +41,13 @@ class LogbackLoggerTest {
 
         @Test
         void optToSupplyDefaultLevelAsInfo() {
-            assertEquals(Level.INFO, LOGGER.getLevel());
-            LOGGER.log("opt to provide default level");
+            assertTrue(LOGGER.atInfo().isEnabled());
         }
 
         @Test
         void noArgAtHonorsLeveOnMethodName() {
-            assertEquals(Level.TRACE, LOGGER.atTrace().getLevel());
-            assertEquals(Level.DEBUG, LOGGER.atDebug().getLevel());
-            assertEquals(Level.INFO, LOGGER.atInfo().getLevel());
-            assertEquals(Level.WARN, LOGGER.atWarn().getLevel());
-            assertEquals(Level.ERROR, LOGGER.atError().getLevel());
+            assertFalse(LOGGER.atTrace().isEnabled());
+            assertTrue(LOGGER.atDebug().isEnabled());
         }
     }
 
