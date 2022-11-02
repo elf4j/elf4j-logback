@@ -149,7 +149,14 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(String message, Object... args) {
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, null);
+        if (isLevelDisabled()) {
+            return;
+        }
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), null);
+    }
+
+    private Object[] supply(Object[] args) {
+        return Arrays.stream(args).map(arg -> arg instanceof Supplier<?> ? ((Supplier<?>) arg).get() : arg).toArray();
     }
 
     @Override
@@ -188,7 +195,10 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(Throwable t, String message, Object... args) {
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, t);
+        if (isLevelDisabled()) {
+            return;
+        }
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), t);
     }
 
     @Override
