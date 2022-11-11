@@ -22,9 +22,6 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   ~ SOFTWARE.
   -->
-
-<!DOCTYPE configuration>
-
 <configuration>
     <import class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"/>
     <import class="ch.qos.logback.core.ConsoleAppender"/>

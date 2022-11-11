@@ -58,15 +58,15 @@ class LogbackLogger implements Logger {
     }
 
     static LogbackLogger instance() {
-        return getLogger(CallingStackUtil.getElf4jLoggerClientClassName());
+        return getLogger(CallStack.mostRecentCallerOf(Logger.class).getClassName());
     }
 
     static LogbackLogger instance(String name) {
-        return getLogger(name == null ? CallingStackUtil.getElf4jLoggerClientClassName() : name);
+        return getLogger(name == null ? CallStack.mostRecentCallerOf(Logger.class).getClassName() : name);
     }
 
     static LogbackLogger instance(Class<?> clazz) {
-        return getLogger(clazz == null ? CallingStackUtil.getElf4jLoggerClientClassName() : clazz.getName());
+        return getLogger(clazz == null ? CallStack.mostRecentCallerOf(Logger.class).getClassName() : clazz.getName());
     }
 
     private static LogbackLogger getLogger(@NonNull String name, @NonNull Level level) {
@@ -239,21 +239,23 @@ class LogbackLogger implements Logger {
         }
     }
 
-    private static class CallingStackUtil {
-        static final String ELF4J_LOGGER_FACTORY_METHOD_NAME = "instance";
-        static final String ELF4J_LOGGER_TYPE_NAME = elf4j.Logger.class.getName();
+    private static class CallStack {
 
-        static String getElf4jLoggerClientClassName() {
+        static StackTraceElement mostRecentCallerOf(@NonNull Class<?> calleeClass) {
             StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+            String calleeClassName = calleeClass.getName();
             for (int i = 0; i < stackTrace.length; i++) {
-                StackTraceElement stackTraceElement = stackTrace[i];
-                if (ELF4J_LOGGER_TYPE_NAME.equals(stackTraceElement.getClassName())
-                        && ELF4J_LOGGER_FACTORY_METHOD_NAME.equals(stackTraceElement.getMethodName())) {
-                    return stackTrace[i + 1].getClassName();
+                if (calleeClassName.equals(stackTrace[i].getClassName())) {
+                    for (int j = i + 1; j < stackTrace.length; j++) {
+                        if (!calleeClassName.equals(stackTrace[j].getClassName())) {
+                            return stackTrace[j];
+                        }
+                    }
+                    break;
                 }
             }
-            throw new IllegalStateException(
-                    "unable to locate ELF4J logger client class in calling stack: " + Arrays.toString(stackTrace));
+            throw new NoSuchElementException("unable to locate caller class of " + calleeClass + " in call stack "
+                    + Arrays.toString(stackTrace));
         }
     }
 }
