@@ -30,7 +30,7 @@
 
     <groupId>io.github.elf4j</groupId>
     <artifactId>elf4j-logback</artifactId>
-    <version>6.0.0</version>
+    <version>6.0.1</version>
 
     <packaging>jar</packaging>
     <name>elf4j-logback</name>
