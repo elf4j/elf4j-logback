@@ -50,11 +50,31 @@ class LogbackLogger implements Logger {
     @NonNull private final String name;
     @NonNull private final Level level;
     @NonNull private final ch.qos.logback.classic.Logger nativeLogger;
+    private final boolean enabled;
 
     private LogbackLogger(@NonNull String name, @NonNull Level level) {
         this.name = name;
         this.level = level;
         this.nativeLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(name);
+        switch (this.level) {
+            case TRACE:
+                enabled = nativeLogger.isTraceEnabled();
+                break;
+            case DEBUG:
+                enabled = nativeLogger.isDebugEnabled();
+                break;
+            case INFO:
+                enabled = nativeLogger.isInfoEnabled();
+                break;
+            case WARN:
+                enabled = nativeLogger.isWarnEnabled();
+                break;
+            case ERROR:
+                enabled = nativeLogger.isErrorEnabled();
+                break;
+            default:
+                enabled = false;
+        }
     }
 
     static LogbackLogger instance() {
@@ -130,15 +150,12 @@ class LogbackLogger implements Logger {
 
     @Override
     public boolean isEnabled() {
-        if (this.level == OFF) {
-            return false;
-        }
-        return !isLevelDisabled();
+        return this.enabled;
     }
 
     @Override
     public void log(Object message) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message), null, null);
@@ -146,7 +163,7 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(Supplier<?> message) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message.get()), null, null);
@@ -154,7 +171,7 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(String message, Object... args) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, null);
@@ -162,7 +179,7 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(String message, Supplier<?>... args) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null,
@@ -180,7 +197,7 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(Throwable t, Object message) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message), null, t);
@@ -188,7 +205,7 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(Throwable t, Supplier<?> message) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message.get()), null, t);
@@ -196,7 +213,7 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(Throwable t, String message, Object... args) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, t);
@@ -204,7 +221,7 @@ class LogbackLogger implements Logger {
 
     @Override
     public void log(Throwable t, String message, Supplier<?>... args) {
-        if (isLevelDisabled()) {
+        if (!this.isEnabled()) {
             return;
         }
         nativeLogger.log(null,
@@ -220,23 +237,6 @@ class LogbackLogger implements Logger {
             return this;
         }
         return level == OFF ? NoopLogger.INSTANCE : getLogger(this.name, level);
-    }
-
-    private boolean isLevelDisabled() {
-        switch (this.level) {
-            case TRACE:
-                return !nativeLogger.isTraceEnabled();
-            case DEBUG:
-                return !nativeLogger.isDebugEnabled();
-            case INFO:
-                return !nativeLogger.isInfoEnabled();
-            case WARN:
-                return !nativeLogger.isWarnEnabled();
-            case ERROR:
-                return !nativeLogger.isErrorEnabled();
-            default:
-                return true;
-        }
     }
 
     private static class CallStack {
