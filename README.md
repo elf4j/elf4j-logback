@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.elf4j/elf4j-logback.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.elf4j%22%20AND%20a:%22elf4j-logback%22)
+
 # elf4j-logback
 
 The [LOGBACK](https://logback.qos.ch/) service provider binding for the Easy Logging Facade for
