@@ -43,7 +43,6 @@ import static elf4j.Level.*;
 @ToString
 class LogbackLogger implements Logger {
     private static final Level DEFAULT_LEVEL = INFO;
-    private static final String EMPTY_MESSAGE = "";
     private static final String FQCN = LogbackLogger.class.getName();
     private static final EnumMap<Level, Integer> LEVEL_MAP = setLeveMap();
     private static final EnumMap<Level, Map<String, LogbackLogger>> LOGGER_CACHE = initLoggerCache();
@@ -113,6 +112,29 @@ class LogbackLogger implements Logger {
         return levelMap;
     }
 
+    private static Object supply(Object o) {
+        return o instanceof Supplier<?> ? ((Supplier<?>) o).get() : o;
+    }
+
+    private static Object[] supply(Object[] objects) {
+        return Arrays.stream(objects).map(LogbackLogger::supply).toArray();
+    }
+
+    @Override
+    public @NonNull String getName() {
+        return this.name;
+    }
+
+    @Override
+    public @NonNull Level getLevel() {
+        return this.level;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
+    }
+
     @Override
     public Logger atTrace() {
         return atLevel(TRACE);
@@ -139,34 +161,11 @@ class LogbackLogger implements Logger {
     }
 
     @Override
-    public @NonNull String getName() {
-        return this.name;
-    }
-
-    @Override
-    public @NonNull Level getLevel() {
-        return this.level;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    @Override
     public void log(Object message) {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message), null, null);
-    }
-
-    @Override
-    public void log(Supplier<?> message) {
-        if (!this.isEnabled()) {
-            return;
-        }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message.get()), null, null);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(supply(message)), null, null);
     }
 
     @Override
@@ -174,20 +173,7 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, null);
-    }
-
-    @Override
-    public void log(String message, Supplier<?>... args) {
-        if (!this.isEnabled()) {
-            return;
-        }
-        nativeLogger.log(null,
-                FQCN,
-                LEVEL_MAP.get(this.level),
-                message,
-                Arrays.stream(args).map(Supplier::get).toArray(Object[]::new),
-                null);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), null);
     }
 
     @Override
@@ -195,7 +181,7 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), EMPTY_MESSAGE, null, t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), t.getMessage(), null, t);
     }
 
     @Override
@@ -203,15 +189,7 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message), null, t);
-    }
-
-    @Override
-    public void log(Throwable t, Supplier<?> message) {
-        if (!this.isEnabled()) {
-            return;
-        }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(message.get()), null, t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(supply(message)), null, t);
     }
 
     @Override
@@ -219,20 +197,7 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, args, t);
-    }
-
-    @Override
-    public void log(Throwable t, String message, Supplier<?>... args) {
-        if (!this.isEnabled()) {
-            return;
-        }
-        nativeLogger.log(null,
-                FQCN,
-                LEVEL_MAP.get(this.level),
-                message,
-                Arrays.stream(args).map(Supplier::get).toArray(Object[]::new),
-                t);
+        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), t);
     }
 
     private Logger atLevel(Level level) {
