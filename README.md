@@ -30,12 +30,14 @@ provider. Because of the ELF4J API, opting for LOGBACK as the logging implementa
 
 The usual [LOGBACK configuration](https://logback.qos.ch/manual/configuration.html) applies.
 
-With Maven, in addition to the ELF4J API compile-scope dependency, an end-user application would use this provider as a runtime-scope dependency:
+With Maven, in addition to the ELF4J API compile-scope dependency, an end-user application would use this provider as a
+runtime-scope dependency:
 
-```xml
+```html
+
 <dependency>
-  <groupId>io.github.elf4j</groupId>
-  <artifactId>elf4j-api</artifactId>
+    <groupId>io.github.elf4j</groupId>
+    <artifactId>elf4j-api</artifactId>
 </dependency>
 
 <dependency>
