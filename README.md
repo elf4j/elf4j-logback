@@ -15,9 +15,7 @@ code change.
 
 ## Prerequisite
 
-- Java 8+
-- [ELF4J](https://github.com/elf4j/elf4j-api) 7.0.0+
-- LOGBACK 1.4.4+
+Java 8+
 
 ## Get it...
 
