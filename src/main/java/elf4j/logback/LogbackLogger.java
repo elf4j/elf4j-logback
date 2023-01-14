@@ -46,10 +46,10 @@ class LogbackLogger implements Logger {
     private static final String FQCN = LogbackLogger.class.getName();
     private static final EnumMap<Level, Integer> LEVEL_MAP = setLeveMap();
     private static final EnumMap<Level, Map<String, LogbackLogger>> LOGGER_CACHE = initLoggerCache();
-    @NonNull private final String name;
-    @NonNull private final Level level;
-    @NonNull private final ch.qos.logback.classic.Logger nativeLogger;
     private final boolean enabled;
+    @NonNull private final Level level;
+    @NonNull private final String name;
+    @NonNull private final ch.qos.logback.classic.Logger nativeLogger;
 
     private LogbackLogger(@NonNull String name, @NonNull Level level) {
         this.name = name;
@@ -121,28 +121,13 @@ class LogbackLogger implements Logger {
     }
 
     @Override
-    public @NonNull String getName() {
-        return this.name;
-    }
-
-    @Override
-    public @NonNull Level getLevel() {
-        return this.level;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    @Override
-    public Logger atTrace() {
-        return atLevel(TRACE);
-    }
-
-    @Override
     public Logger atDebug() {
         return atLevel(DEBUG);
+    }
+
+    @Override
+    public Logger atError() {
+        return atLevel(ERROR);
     }
 
     @Override
@@ -151,13 +136,28 @@ class LogbackLogger implements Logger {
     }
 
     @Override
+    public Logger atTrace() {
+        return atLevel(TRACE);
+    }
+
+    @Override
     public Logger atWarn() {
         return atLevel(WARN);
     }
 
     @Override
-    public Logger atError() {
-        return atLevel(ERROR);
+    public @NonNull Level getLevel() {
+        return this.level;
+    }
+
+    @Override
+    public @NonNull String getName() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.enabled;
     }
 
     @Override

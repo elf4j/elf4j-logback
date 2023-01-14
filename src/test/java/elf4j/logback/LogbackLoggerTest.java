@@ -51,16 +51,6 @@ class LogbackLoggerTest {
     class log {
 
         @Test
-        void object() {
-            LOGGER.log("log message");
-        }
-
-        @Test
-        void supplier() {
-            LOGGER.atTrace().log((Supplier) () -> "supplier message");
-        }
-
-        @Test
         void messageAndArgs() {
             LOGGER.atDebug().log("message arg1 {}, arg2 {}", "a11111", new Object());
         }
@@ -75,6 +65,16 @@ class LogbackLoggerTest {
         }
 
         @Test
+        void object() {
+            LOGGER.log("log message");
+        }
+
+        @Test
+        void supplier() {
+            LOGGER.atTrace().log((Supplier) () -> "supplier message");
+        }
+
+        @Test
         void throwable() {
             LOGGER.atError().log(new Exception("ex message"));
         }
@@ -82,11 +82,6 @@ class LogbackLoggerTest {
         @Test
         void throwableAndMessage() {
             LOGGER.atError().log(new Exception("ex message"), "log message");
-        }
-
-        @Test
-        void throwableAndSupplier() {
-            LOGGER.atError().log(new Exception("ex message"), (Supplier) () -> "supplier log message");
         }
 
         @Test
@@ -103,24 +98,29 @@ class LogbackLoggerTest {
                             "a22222",
                             (Supplier) () -> Arrays.stream(new Object[] { "a33333" }).collect(Collectors.toList()));
         }
+
+        @Test
+        void throwableAndSupplier() {
+            LOGGER.atError().log(new Exception("ex message"), (Supplier) () -> "supplier log message");
+        }
     }
 
     @Nested
     class name {
-        @Test
-        void loggerNameForNullOrNoargInstanceCaller() {
-            String thisClassName = this.getClass().getName();
-            assertEquals(thisClassName, Logger.instance().getName());
-            assertEquals(thisClassName, Logger.instance((Class<?>) null).getName());
-            assertEquals(thisClassName, Logger.instance((String) null).getName());
-        }
-
         @Test
         void blankOrEmptyNamesStayAsIs() {
             String blank = "   ";
             assertEquals(blank, Logger.instance(blank).getName());
             String empty = "";
             assertEquals("", Logger.instance(empty).getName());
+        }
+
+        @Test
+        void loggerNameForNullOrNoargInstanceCaller() {
+            String thisClassName = this.getClass().getName();
+            assertEquals(thisClassName, Logger.instance().getName());
+            assertEquals(thisClassName, Logger.instance((Class<?>) null).getName());
+            assertEquals(thisClassName, Logger.instance((String) null).getName());
         }
     }
 
