@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LogbackLoggerTest {
-    public static final Logger LOGGER = Logger.instance(LogbackLoggerTest.class);
+    public static final Logger LOGGER = Logger.instance();
 
     @Nested
     class levels {
@@ -108,31 +108,21 @@ class LogbackLoggerTest {
     @Nested
     class name {
         @Test
-        void blankOrEmptyNamesStayAsIs() {
-            String blank = "   ";
-            assertEquals(blank, Logger.instance(blank).getName());
-            String empty = "";
-            assertEquals("", Logger.instance(empty).getName());
-        }
-
-        @Test
         void loggerNameForNullOrNoargInstanceCaller() {
             String thisClassName = this.getClass().getName();
-            assertEquals(thisClassName, Logger.instance().getName());
-            assertEquals(thisClassName, Logger.instance((Class<?>) null).getName());
-            assertEquals(thisClassName, Logger.instance((String) null).getName());
+            assertEquals(thisClassName, ((LogbackLogger) Logger.instance()).getName());
         }
     }
 
     @Nested
     class readmeSamples {
-        private final Logger logger = Logger.instance(readmeSamples.class);
+        private final LogbackLogger logger = (LogbackLogger) Logger.instance();
 
         @Test
         void messagesArgsAndGuards() {
             logger.atWarn().log("message with arguments - arg1 {}, arg2 {}, arg3 {}", "a11111", "a22222", "a33333");
             logger.atInfo().log("info message");
-            Logger debug = logger.atDebug();
+            LogbackLogger debug = (LogbackLogger) logger.atDebug();
             assertNotSame(logger, debug);
             assertEquals(logger.getName(), debug.getName());
             assertEquals(Level.DEBUG, debug.getLevel());

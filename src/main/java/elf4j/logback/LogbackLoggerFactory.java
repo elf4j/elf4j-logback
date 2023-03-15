@@ -27,21 +27,9 @@ package elf4j.logback;
 import elf4j.Logger;
 import elf4j.spi.LoggerFactory;
 
-import javax.annotation.Nullable;
-
 public class LogbackLoggerFactory implements LoggerFactory {
     @Override
     public Logger logger() {
         return LogbackLogger.instance();
-    }
-
-    @Override
-    public Logger logger(@Nullable String name) {
-        return LogbackLogger.instance(name);
-    }
-
-    @Override
-    public Logger logger(@Nullable Class<?> clazz) {
-        return LogbackLogger.instance(clazz);
     }
 }

@@ -80,14 +80,6 @@ class LogbackLogger implements Logger {
         return getLogger(CallStack.mostRecentCallerOf(Logger.class).getClassName());
     }
 
-    static LogbackLogger instance(String name) {
-        return getLogger(name == null ? CallStack.mostRecentCallerOf(Logger.class).getClassName() : name);
-    }
-
-    static LogbackLogger instance(Class<?> clazz) {
-        return getLogger(clazz == null ? CallStack.mostRecentCallerOf(Logger.class).getClassName() : clazz.getName());
-    }
-
     private static LogbackLogger getLogger(@NonNull String name, @NonNull Level level) {
         return LOGGER_CACHE.get(level).computeIfAbsent(name, k -> new LogbackLogger(k, level));
     }
@@ -151,11 +143,6 @@ class LogbackLogger implements Logger {
     }
 
     @Override
-    public @NonNull String getName() {
-        return this.name;
-    }
-
-    @Override
     public boolean isEnabled() {
         return this.enabled;
     }
@@ -200,11 +187,15 @@ class LogbackLogger implements Logger {
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), t);
     }
 
+    public String getName() {
+        return name;
+    }
+
     private Logger atLevel(Level level) {
         if (this.level == level) {
             return this;
         }
-        return level == OFF ? NoopLogger.INSTANCE : getLogger(this.name, level);
+        return level == OFF ? NoopLogger.OFF : getLogger(this.name, level);
     }
 
     private static class CallStack {
