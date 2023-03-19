@@ -1,4 +1,4 @@
-name: Publish to Artifact Repo
+name: Publish Artifact
 
 on:
   release:
