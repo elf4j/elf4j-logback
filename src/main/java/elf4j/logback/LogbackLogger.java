@@ -113,28 +113,11 @@ class LogbackLogger implements Logger {
     }
 
     @Override
-    public Logger atDebug() {
-        return atLevel(DEBUG);
-    }
-
-    @Override
-    public Logger atError() {
-        return atLevel(ERROR);
-    }
-
-    @Override
-    public Logger atInfo() {
-        return atLevel(INFO);
-    }
-
-    @Override
-    public Logger atTrace() {
-        return atLevel(TRACE);
-    }
-
-    @Override
-    public Logger atWarn() {
-        return atLevel(WARN);
+    public Logger atLevel(Level level) {
+        if (this.level == level) {
+            return this;
+        }
+        return level == OFF ? NoopLogger.OFF : getLogger(this.name, level);
     }
 
     @Override
@@ -187,15 +170,8 @@ class LogbackLogger implements Logger {
         nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), t);
     }
 
-    public String getName() {
+    String getName() {
         return name;
-    }
-
-    private Logger atLevel(Level level) {
-        if (this.level == level) {
-            return this;
-        }
-        return level == OFF ? NoopLogger.OFF : getLogger(this.name, level);
     }
 
     private static class CallStack {
