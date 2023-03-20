@@ -47,3 +47,7 @@ application would use runtime-scope for this provider as a dependency:
 Note: Only one logging provider such as this should be in effect at run-time. If multiple providers end up in the final
 build of an application, somehow, then the `elf4j.logger.factory.fqcn` system property will have to be used to select
 the desired provider.
+
+```
+java -Delf4j.logger.factory.fqcn="elf4j.logback.LogbackLoggerFactory" -jar MyApplication.jar
+```
