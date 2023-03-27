@@ -1,6 +1,6 @@
 # elf4j-logback
 
-An adapter to use [LOGBACK](https://logback.qos.ch/) as service provider and logging engine
+An adapter to use [LOGBACK](https://logback.qos.ch/) as service provider and runtime log engine
 for the [ELF4J](https://github.com/elf4j/elf4j) (Easy Logging Facade for Java) API
 
 ## User Story
