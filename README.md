@@ -20,7 +20,7 @@ Java 8+
 ## Use It...
 
 If you are using the [ELF4J API](https://github.com/elf4j/elf4j) for logging, and wish to select or change to use
-LOGBACK as the run-time log engine, then simply pack this serivce provider in the classpath when the application
+LOGBACK as the run-time log engine, then simply pack this service provider in the classpath when the application
 deploys. No code change needed. At compile time, the client code is unaware of this run-time logging service provider.
 With the ELF4J facade, opting for LOGBACK as the logging implementation is a deployment-time decision.
 
