@@ -27,6 +27,9 @@ package elf4j.logback;
 import elf4j.Logger;
 import elf4j.spi.LoggerFactory;
 
+/**
+ *
+ */
 public class LogbackLoggerFactory implements LoggerFactory {
     @Override
     public Logger logger() {

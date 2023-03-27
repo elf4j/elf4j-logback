@@ -43,10 +43,10 @@ import static elf4j.Level.*;
 @ToString
 class LogbackLogger implements Logger {
     private static final Level DEFAULT_LEVEL = INFO;
-    private static final String FQCN = LogbackLogger.class.getName();
+    private static final Class<Logger> SERVICE_ACCESS_CLASS = Logger.class;
+    private static final String SERVICE_INTERFACE_CLASS = LogbackLogger.class.getName();
     private static final EnumMap<Level, Integer> LEVEL_MAP = setLeveMap();
     private static final EnumMap<Level, Map<String, LogbackLogger>> LOGGER_CACHE = initLoggerCache();
-    private final boolean enabled;
     @NonNull private final Level level;
     @NonNull private final String name;
     @NonNull private final ch.qos.logback.classic.Logger nativeLogger;
@@ -55,29 +55,10 @@ class LogbackLogger implements Logger {
         this.name = name;
         this.level = level;
         this.nativeLogger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(name);
-        switch (this.level) {
-            case TRACE:
-                enabled = nativeLogger.isTraceEnabled();
-                break;
-            case DEBUG:
-                enabled = nativeLogger.isDebugEnabled();
-                break;
-            case INFO:
-                enabled = nativeLogger.isInfoEnabled();
-                break;
-            case WARN:
-                enabled = nativeLogger.isWarnEnabled();
-                break;
-            case ERROR:
-                enabled = nativeLogger.isErrorEnabled();
-                break;
-            default:
-                enabled = false;
-        }
     }
 
     static LogbackLogger instance() {
-        return getLogger(CallStack.mostRecentCallerOf(Logger.class).getClassName());
+        return getLogger(serviceClient().getClassName());
     }
 
     private static LogbackLogger getLogger(@NonNull String name, @NonNull Level level) {
@@ -92,6 +73,24 @@ class LogbackLogger implements Logger {
         EnumMap<Level, Map<String, LogbackLogger>> loggerCache = new EnumMap<>(Level.class);
         EnumSet.allOf(Level.class).forEach(level -> loggerCache.put(level, new ConcurrentHashMap<>()));
         return loggerCache;
+    }
+
+    private static StackTraceElement serviceClient() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        String calleeClassName = SERVICE_ACCESS_CLASS.getName();
+        for (int i = 0; i < stackTrace.length; i++) {
+            if (calleeClassName.equals(stackTrace[i].getClassName())) {
+                for (int j = i + 1; j < stackTrace.length; j++) {
+                    if (!calleeClassName.equals(stackTrace[j].getClassName())) {
+                        return stackTrace[j];
+                    }
+                }
+                break;
+            }
+        }
+        throw new NoSuchElementException(
+                "unable to locate caller class of " + SERVICE_ACCESS_CLASS + " in call stack " + Arrays.toString(
+                        stackTrace));
     }
 
     private static EnumMap<Level, Integer> setLeveMap() {
@@ -127,7 +126,20 @@ class LogbackLogger implements Logger {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        switch (this.level) {
+            case TRACE:
+                return nativeLogger.isTraceEnabled();
+            case DEBUG:
+                return nativeLogger.isDebugEnabled();
+            case INFO:
+                return nativeLogger.isInfoEnabled();
+            case WARN:
+                return nativeLogger.isWarnEnabled();
+            case ERROR:
+                return nativeLogger.isErrorEnabled();
+            default:
+                return false;
+        }
     }
 
     @Override
@@ -135,7 +147,12 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(supply(message)), null, null);
+        nativeLogger.log(null,
+                SERVICE_INTERFACE_CLASS,
+                LEVEL_MAP.get(this.level),
+                Objects.toString(supply(message)),
+                null,
+                null);
     }
 
     @Override
@@ -143,7 +160,7 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), null);
+        nativeLogger.log(null, SERVICE_INTERFACE_CLASS, LEVEL_MAP.get(this.level), message, supply(args), null);
     }
 
     @Override
@@ -151,7 +168,7 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), t.getMessage(), null, t);
+        nativeLogger.log(null, SERVICE_INTERFACE_CLASS, LEVEL_MAP.get(this.level), t.getMessage(), null, t);
     }
 
     @Override
@@ -159,7 +176,12 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), Objects.toString(supply(message)), null, t);
+        nativeLogger.log(null,
+                SERVICE_INTERFACE_CLASS,
+                LEVEL_MAP.get(this.level),
+                Objects.toString(supply(message)),
+                null,
+                t);
     }
 
     @Override
@@ -167,31 +189,11 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null, FQCN, LEVEL_MAP.get(this.level), message, supply(args), t);
+        nativeLogger.log(null, SERVICE_INTERFACE_CLASS, LEVEL_MAP.get(this.level), message, supply(args), t);
     }
 
-    String getName() {
+    @NonNull String getName() {
         return name;
-    }
-
-    private static class CallStack {
-
-        static StackTraceElement mostRecentCallerOf(@NonNull Class<?> calleeClass) {
-            StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
-            String calleeClassName = calleeClass.getName();
-            for (int i = 0; i < stackTrace.length; i++) {
-                if (calleeClassName.equals(stackTrace[i].getClassName())) {
-                    for (int j = i + 1; j < stackTrace.length; j++) {
-                        if (!calleeClassName.equals(stackTrace[j].getClassName())) {
-                            return stackTrace[j];
-                        }
-                    }
-                    break;
-                }
-            }
-            throw new NoSuchElementException("unable to locate caller class of " + calleeClass + " in call stack "
-                    + Arrays.toString(stackTrace));
-        }
     }
 }
 
