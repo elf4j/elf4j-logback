@@ -25,20 +25,19 @@
 
 package elf4j.logback;
 
+import static elf4j.Level.*;
+
 import elf4j.Level;
 import elf4j.Logger;
 import elf4j.util.NoopLogger;
-import lombok.NonNull;
-import lombok.ToString;
-import net.jcip.annotations.Immutable;
-import org.slf4j.LoggerFactory;
-import org.slf4j.spi.LocationAwareLogger;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
-
-import static elf4j.Level.*;
+import javax.annotation.concurrent.Immutable;
+import lombok.NonNull;
+import lombok.ToString;
+import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LocationAwareLogger;
 
 @Immutable
 @ToString
@@ -48,8 +47,11 @@ class LogbackLogger implements Logger {
     private static final String SERVICE_INTERFACE_CLASS = LogbackLogger.class.getName();
     private static final EnumMap<Level, Integer> LEVEL_MAP = setLeveMap();
     private static final EnumMap<Level, Map<String, LogbackLogger>> LOGGER_CACHE = initLoggerCache();
+
     @NonNull private final Level level;
+
     @NonNull private final String name;
+
     @NonNull private final ch.qos.logback.classic.Logger nativeLogger;
 
     private LogbackLogger(@NonNull String name, @NonNull Level level) {
@@ -89,9 +91,8 @@ class LogbackLogger implements Logger {
                 break;
             }
         }
-        throw new NoSuchElementException(
-                "unable to locate caller class of " + SERVICE_ACCESS_CLASS + " in call stack " + Arrays.toString(
-                        stackTrace));
+        throw new NoSuchElementException("unable to locate caller class of " + SERVICE_ACCESS_CLASS + " in call stack "
+                + Arrays.toString(stackTrace));
     }
 
     private static EnumMap<Level, Integer> setLeveMap() {
@@ -148,7 +149,8 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null,
+        nativeLogger.log(
+                null,
                 SERVICE_INTERFACE_CLASS,
                 LEVEL_MAP.get(this.level),
                 Objects.toString(supply(message)),
@@ -177,12 +179,8 @@ class LogbackLogger implements Logger {
         if (!this.isEnabled()) {
             return;
         }
-        nativeLogger.log(null,
-                SERVICE_INTERFACE_CLASS,
-                LEVEL_MAP.get(this.level),
-                Objects.toString(supply(message)),
-                null,
-                t);
+        nativeLogger.log(
+                null, SERVICE_INTERFACE_CLASS, LEVEL_MAP.get(this.level), Objects.toString(supply(message)), null, t);
     }
 
     @Override
@@ -197,4 +195,3 @@ class LogbackLogger implements Logger {
         return name;
     }
 }
-
