@@ -31,7 +31,7 @@
 
     <groupId>io.github.elf4j</groupId>
     <artifactId>elf4j-logback</artifactId>
-    <version>8.0.4</version>
+    <version>8.0.5</version>
 
     <packaging>jar</packaging>
     <name>elf4j-logback</name>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.4.12</version>
+            <version>1.4.14</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
